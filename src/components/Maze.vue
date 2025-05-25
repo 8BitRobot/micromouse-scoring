@@ -1,41 +1,43 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
+type MouseMovementDirection = 'up' | 'down' | 'left' | 'right';
+
 const emit = defineEmits(['completeMaze', 'completeRun', 'startNewRun']);
 
-const maze = `+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-|                       |           |                           |
-+   +---+   +---+   +   +   +   +   +---+---+   +---+   +   +   +
-|       |       |   |       |   |           |   |   |   |   |   |
-+   +---+   +---+   +   +---+   +---+   +   +   +   +---+   +   +
-|   |   |   |   |   |           |       |                   |   |
-+   +   +   +   +   +   +---+---+---+   +   +   +   +---+   +   +
-|                       |           |       |   |   |           |
-+   +---+---+   +---+   +   +---+   +---+   +---+---+   +---+   +
-|   |   |   |   |   |                   |                       |
-+   +   +   +   +   +   +   +---+---+   +---+---+---+   +   +---+
-|   |   |   |   |       |           |       |           |       |
-+   +   +   +   +---+   +   +   +   +   +   +   +---+   +   +   +
-|                       |   |   |       |                   |   |
-+   +---+   +   +   +---+   +---+   +   +   +---+---+   +   +   +
-|       |   |   |   |       |       |           |       |   |   |
-+   +---+   +---+   +---+   +   +   +   +   +   +   +---+   +   +
-|   |           |   |   |   |       |   |   |               |   |
-+   +---+   +   +   +   +---+---+---+   +---+   +---+   +   +   +
-|           |               |   |       |       |       |       |
-+   +   +   +   +---+---+   +   +---+   +---+---+---+   +   +---+
-|   |   |   |   |       |       |   |                           |
-+---+   +---+   +   +---+   +---+   +---+---+   +---+---+   +---+
-|               |       |       |   |   |                       |
-+   +---+---+   +   +---+---+   +   +   +---+   +---+   +---+   +
-|       |   |           |       |               |           |   |
-+   +---+   +   +   +   +   +---+   +   +---+   +---+   +---+   +
-|               |   |               |       |   |           |   |
-+   +---+---+   +   +   +---+---+---+---+   +   +---+   +   +   +
-|       |                                   |   |       |       |
-+   +   +   +---+   +   +   +   +---+---+---+   +---+---+---+   +
-|   |       |       |   |   |                                   |
-+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+`;
+const maze = `o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
+|                       |               |       |           |   |
+o   o   o   o   o---o   o   o   o   o   o   o   o   o---o   o   o
+|   |   |   |   |       |   |   |   |   |   |       |   |   |   |
+o   o   o---o   o---o   o   o   o   o   o   o---o   o   o   o   o
+|                                                           |   |
+o---o   o---o   o---o   o   o   o   o   o---o   o---o---o   o   o
+|           |   |       |   |   |   |   |       |       |       |
+o---o---o   o---o   o---o   o   o   o   o   o---o   o   o   o   o
+|           |       |                   |   |       |   |   |   |
+o   o   o---o   o---o   o---o---o---o---o   o---o---o   o   o   o
+|   |   |       |       |                       |           |   |
+o   o---o   o---o---o---o   o   o---o---o---o   o   o   o---o   o
+|   |       |           |   |       |       |   |   |   |       |
+o   o   o---o---o---o   o---o   o---o---o   o   o---o---o   o   o
+|       |           |   |   |       |                       |   |
+o   o---o   o---o---o   o   o   o   o   o---o---o---o---o---o   o
+|   |                       |           |                       |
+o   o   o---o---o   o   o---o---o---o---o---o---o---o---o---o   o
+|   |               |                                   |       |
+o   o   o---o---o---o   o---o---o---o   o---o   o---o   o   o   o
+|   |   |               |               |   |       |   |   |   |
+o   o   o   o   o---o   o   o---o---o---o   o---o   o   o---o   o
+|           |   |           |           |       |   |       |   |
+o   o---o---o   o---o---o---o   o---o   o   o---o   o---o   o   o
+|   |                       |   |   |   |                   |   |
+o   o   o---o   o---o   o   o---o   o   o   o---o   o---o   o   o
+|   |       |       |   |                       |   |       |   |
+o   o   o---o   o---o   o---o---o   o---o   o---o   o---o   o   o
+|   |   |   |   |   |   |   |   |   |       |           |   |   |
+o   o   o   o   o   o   o   o   o   o---o   o---o   o---o   o   o
+|   |                                                           |
+o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o`;
 
 function createMazeGrid(maze: string) {
   const mazeGrid: ('peg' | 'hwall' | 'vwall' | 'nowall' | 'unvisited' | 'visited' | 'mouse' )[][] = [];
@@ -46,7 +48,7 @@ function createMazeGrid(maze: string) {
     if (i % 2 === 0) {
       const mazeGridRow: ('peg' | 'hwall' | 'nowall')[] = [];
       // row with walls
-      const row = mazeRows[i].split('+').slice(1, 17).map((cell, index) => {
+      const row = mazeRows[i].split('o').slice(1, 17).map((cell, index) => {
         return cell === '---' ? 'hwall' : 'nowall';
       });
       for (const element of row) {
@@ -74,6 +76,7 @@ function createMazeGrid(maze: string) {
 }
 
 const mazeGrid = ref(createMazeGrid(maze));
+console.log(mazeGrid.value);
 
 const mousePosition = ref(1024);
 
@@ -91,9 +94,45 @@ function completeRun() {
   cellsVisited.value = 0;
 }
 
-function moveMouse(value: number, delta: number) {
+function getDeltaFromDirection(direction: MouseMovementDirection): number {
+  switch (direction) {
+    case 'up':
+      return -66; // Move up in the grid
+    case 'down':
+      return 66; // Move down in the grid
+    case 'left':
+      return -2; // Move left in the grid
+    case 'right':
+      return 2; // Move right in the grid
+    default:
+      throw new Error('Invalid direction');
+  }
+}
+
+function hasWallInDirection(value: number, direction: MouseMovementDirection): boolean {
+  console.log('Checking walls for value:', value, 'in direction:', direction);
+  console.log('Checking in spot: ', (value + getDeltaFromDirection(direction) / 2));
+  return mazeGrid.value[(value + getDeltaFromDirection(direction) / 2)] !== 'nowall';
+}
+
+function isMouseMovementInvalid(value: number, direction: MouseMovementDirection, forceMovement: 'default' | 'force'): boolean {
+  // Check if the movement is valid based on the walls around the cell
+  if (forceMovement === 'force') {
+    return false; // Force movement ignores wall checks
+  }
+  if (hasWallInDirection(value, direction)) {
+    return true; // Movement is invalid if there's a wall in the direction
+  }
+  return false;
+}
+
+function moveMouse(value: number, direction: MouseMovementDirection, forceMovement: 'default' | 'force' = 'default'): number {
+  const delta = getDeltaFromDirection(direction);
   // return value if value + delta is out of bounds (0 to 33*33-1)
   if (value + delta < 0 || value + delta > 1088) {
+    return value;
+  }
+  if (isMouseMovementInvalid(value, direction, forceMovement)) {
     return value;
   }
   const newValue = value + delta;
@@ -130,13 +169,13 @@ onMounted(() => {
     "keydown",
     (event) => {
       if (event.code === 'ArrowUp') {
-        mousePosition.value = moveMouse(mousePosition.value, -66);
+        mousePosition.value = moveMouse(mousePosition.value, 'up');
       } else if (event.code === 'ArrowDown') {
-        mousePosition.value = moveMouse(mousePosition.value, 66);
+        mousePosition.value = moveMouse(mousePosition.value, 'down');
       } else if (event.code === 'ArrowRight') {
-        mousePosition.value = moveMouse(mousePosition.value, 2);
+        mousePosition.value = moveMouse(mousePosition.value, 'right');
       } else if (event.code === 'ArrowLeft') {
-        mousePosition.value = moveMouse(mousePosition.value, -2);
+        mousePosition.value = moveMouse(mousePosition.value, 'left');
       } else if (event.code === 'KeyZ') {
         undoMoveMouse();
       }
@@ -232,7 +271,7 @@ h1 {
     }
 
     &.vwall, &.hwall {
-      background-color: #ad0f0f;
+      background-color: #ff9d9d;
     }
 
     &.visited {
