@@ -89,7 +89,6 @@ function completeRun() {
   mousePosition.value = 1024;
   mazeGrid.value = createMazeGrid(maze);
   moves.value = [];
-  console.log('Run completed:', cellsVisited.value, mazeCompleted.value);
   emit('completeRun', [cellsVisited.value, mazeCompleted.value]);
   cellsVisited.value = 0;
 }

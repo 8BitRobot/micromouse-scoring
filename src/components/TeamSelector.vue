@@ -13,7 +13,6 @@ const props = defineProps({
 });
 
 const medalToShow = computed(() => {
-  console.log(props.teams);
   const bestRunForEachTeam = props.teams.map(team => {
     const completedRuns = team.completedRuns;
     if (completedRuns.length === 0) return null;
