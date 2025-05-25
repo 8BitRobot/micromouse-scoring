@@ -52,8 +52,8 @@ const membersNamesListedNaturally = computed(() => {
   } else if (teamMembers.length === 2) {
     return `${teamMembers[0]} and ${teamMembers[1]}`;
   } else {
-    const lastMember = teamMembers.pop();
-    return `${teamMembers.join(', ')}, and ${lastMember}`;
+    const lastMember = teamMembers[teamMembers.length - 1];
+    return `${teamMembers.slice(0, teamMembers.length - 1).join(', ')}, and ${lastMember}`;
   }
 });
 

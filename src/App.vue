@@ -11,10 +11,84 @@ export type TeamState = {
   completedRuns: { cells: number; time: number; mazeCompleted: boolean }[];
 };
 
-const allTeamStates = ref<TeamState[]>([
-  { name: 'Bigger Chunky', members: ['Parth Pandhare', 'Matthew Chandler'], completedRuns: [] },
-  { name: 'Gus the Sus', members: ['Nat Nguyendinh'], completedRuns: [] },
-])
+const teamInfo = [
+  {
+    "Team Name": "Chunky",
+    "Group Member(s)": "Parth Pandhare, Matthew Chandler",
+  },
+  {
+    "Team Name": "Maze Runners",
+    "Group Member(s)": "David Farag, Rohan Soni",
+  },
+  {
+    "Team Name": "Phoenix",
+    "Group Member(s)": "Magnus Adams, Hung Le, Alec Tandoc, Lucas Wu",
+  },
+  {
+    "Team Name": "Meat",
+    "Group Member(s)": "Eaton Huang, Lucas Zhong",
+  },
+  {
+    "Team Name": "The Harness",
+    "Group Member(s)": "Michael Ward",
+  },
+  {
+    "Team Name": "The Menace",
+    "Group Member(s)": "Nat Nguyendinh",
+  },
+  {
+    "Team Name": "The Fetaration",
+    "Group Member(s)": "Gil Ben, Ami Strum, Peter Le",
+  },
+  {
+    "Team Name": "Maus 66",
+    "Group Member(s)": "Will Craychee, Kai Chan, Haile Do",
+  },
+  {
+    "Team Name": "Formula Remi",
+    "Group Member(s)": "Jeffrey Frederick, Youngwoo Chang, Chad Wong",
+  },
+  {
+    "Team Name": "Long Beach",
+    "Group Member(s)": "Adan Arevalo,Brody Liudzius,Jeffrey Madrid,Andres Valladares",
+  },
+  {
+    "Team Name": "Maud' Dib",
+    "Group Member(s)": "Jeremiah Yong, Adam Wu, Jayce Spurgiasz",
+  },
+  {
+    "Team Name": "BMFC",
+    "Group Member(s)": "Brandon Crossman",
+  },
+  {
+    "Team Name": "L1ghtn1ng R4ts",
+    "Group Member(s)": "Amanda McKay, Leslie Dong, Justin Chen",
+  },
+  {
+    "Team Name": "The Chargers",
+    "Group Member(s)": "Kevin Xiao",
+  },
+  {
+    "Team Name": "The Hammer",
+    "Group Member(s)": "Nicholas Ward",
+  },
+  {
+    "Team Name": "BoMouse",
+    "Group Member(s)": "Nathan Chen, Jerard Agravante",
+  },
+  {
+    "Team Name": "Ben10",
+    "Group Member(s)": "Kyle Cheng, Xaiver Chan, Benjamin Yan",
+  }
+]
+
+const allTeamStates = ref<TeamState[]>(
+  teamInfo.map(team => ({
+    name: team['Team Name'].trim(),
+    members: team['Group Member(s)'].split(',').map(member => member.trim()),
+    completedRuns: [],
+  }))
+)
 
 const autosaveEnabled = ref(false);
 
@@ -45,7 +119,7 @@ function uploadStatesFromJSON(file: File) {
   reader.readAsText(file);
 }
 
-const currentTeam = ref<string>('Gus the Sus');
+const currentTeam = ref<string>(teamInfo[0]['Team Name'].trim());
 
 const timerState = ref<'running' | 'paused' | 'stopped'>('stopped');
 
