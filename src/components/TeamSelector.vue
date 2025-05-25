@@ -36,7 +36,7 @@ onMounted(() => {
   window.addEventListener(
     "keydown",
     (event) => {
-      if (event.code === 'KeyC') {
+      if (event.code === 'KeyJ') {
         selectedTeamName.value = props.teams[((props.teams.findIndex(team => team.name === selectedTeamName.value) + 1) % props.teams.length)].name;  
       }
     },

@@ -176,6 +176,8 @@ onMounted(() => {
         mousePosition.value = moveMouse(mousePosition.value, 'left');
       } else if (event.code === 'KeyZ') {
         undoMoveMouse();
+      } else if (event.code === 'KeyC') {
+        completeRun();
       }
     },
     true,
