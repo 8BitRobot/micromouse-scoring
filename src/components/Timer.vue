@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { sortRuns } from '../utils';
 
 const props = defineProps({
   completedRuns: {
@@ -27,7 +28,7 @@ const stopwatch = computed(() => {
       <h3>{{ stopwatch }}</h3>
     </div>
     <div id="run-summary-container">
-      <div id="run-summary" v-for="(run, index) in props.completedRuns" :key="index" :class="{
+      <div id="run-summary" v-for="(run, index) in sortRuns(props.completedRuns)" :key="index" :class="{
         'complete': run.mazeCompleted,
         'incomplete': !run.mazeCompleted,
       }">
@@ -65,16 +66,21 @@ h3 {
 }
 
 #run-summary-container {
-  width: 50%;
+  width: 70%;
 }
 
 #run-summary {
+  font-size: 1.1rem;
   display: flex;
   flex-flow: row;
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem;
   border-bottom: 1px solid #ccc;
+
+  div {
+    flex: 1;
+  }
   
   span {
     font-weight: bold;
