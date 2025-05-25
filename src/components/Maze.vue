@@ -76,7 +76,6 @@ function createMazeGrid(maze: string) {
 }
 
 const mazeGrid = ref(createMazeGrid(maze));
-console.log(mazeGrid.value);
 
 const mousePosition = ref(1024);
 
@@ -90,6 +89,7 @@ function completeRun() {
   mousePosition.value = 1024;
   mazeGrid.value = createMazeGrid(maze);
   moves.value = [];
+  console.log('Run completed:', cellsVisited.value, mazeCompleted.value);
   emit('completeRun', [cellsVisited.value, mazeCompleted.value]);
   cellsVisited.value = 0;
 }
@@ -110,8 +110,6 @@ function getDeltaFromDirection(direction: MouseMovementDirection): number {
 }
 
 function hasWallInDirection(value: number, direction: MouseMovementDirection): boolean {
-  console.log('Checking walls for value:', value, 'in direction:', direction);
-  console.log('Checking in spot: ', (value + getDeltaFromDirection(direction) / 2));
   return mazeGrid.value[(value + getDeltaFromDirection(direction) / 2)] !== 'nowall';
 }
 
