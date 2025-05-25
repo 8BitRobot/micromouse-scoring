@@ -15,7 +15,36 @@ const allTeamStates = ref<TeamState[]>([
   { name: 'Bigger Chunky', members: ['Parth Pandhare', 'Matthew Chandler'], completedRuns: [] },
   { name: 'Gus the Sus', members: ['Nat Nguyendinh'], completedRuns: [] },
 ])
-  
+
+const autosaveEnabled = ref(false);
+
+function downloadStatesAsJSON() {
+  // Download the team states as a JSON file to `team-states.json` in the Downloads folder.
+  const dataStr = JSON.stringify(allTeamStates.value, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'team-states.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function uploadStatesFromJSON(file: File) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target?.result as string);
+      allTeamStates.value = data;
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+    }
+  };
+  reader.readAsText(file);
+}
+
 const currentTeam = ref<string>('Gus the Sus');
 
 const timerState = ref<'running' | 'paused' | 'stopped'>('stopped');
@@ -46,10 +75,33 @@ function endRun(e: [number, boolean]) {
     time: (clock.value.currentTime - clock.value.startTime) / 1000,
     mazeCompleted: e[1]
   });
+  if (autosaveEnabled.value) {
+    downloadStatesAsJSON();
+  }
 }
 
-
 onMounted(() => {
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyS' && e.ctrlKey) {
+      e.preventDefault();
+      autosaveEnabled.value = !autosaveEnabled.value;
+    } else if (e.code === 'KeyD' && e.ctrlKey) {
+      e.preventDefault();
+      downloadStatesAsJSON();
+    } else if (e.code === 'KeyU' && e.ctrlKey) {
+      e.preventDefault();
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+          uploadStatesFromJSON(file);
+        }
+      };
+      input.click();
+    }
+  });
   setInterval(() => {
     if (timerState.value === 'stopped') {
       clock.value.startTime = Date.now();
@@ -71,7 +123,7 @@ onMounted(() => {
     </nav>
     <div id="content">
       <section>
-        <Maze @complete-maze="disableTimer" @start-new-run="startNewRun" @complete-run="(e) => endRun(e)"/>
+        <Maze @complete-maze="disableTimer" @start-new-run="startNewRun" @complete-run="(e) => endRun(e)" :autosaveEnabled="autosaveEnabled"/>
       </section>
       <section>
         <Timer :completed-runs="findTeamStateObject(currentTeam).completedRuns" :clock="clock"/>

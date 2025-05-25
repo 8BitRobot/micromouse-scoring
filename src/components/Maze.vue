@@ -3,6 +3,13 @@ import { onMounted, ref } from 'vue';
 
 type MouseMovementDirection = 'up' | 'down' | 'left' | 'right';
 
+const props = defineProps({
+  autosaveEnabled: {
+    type: Boolean,
+    required: true,
+  }
+});
+
 const emit = defineEmits(['completeMaze', 'completeRun', 'startNewRun']);
 
 const maze = `o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o---o
@@ -204,7 +211,6 @@ onMounted(() => {
       <h3><span>{{ cellsVisited }}</span> cells visited</h3>
       <button @click="completeRun">Complete Run</button>
     </div>
-    
   </div>
 </template>
 
@@ -237,6 +243,14 @@ h1 {
     span {
       color: #199548;
     }
+  }
+
+  h4 {
+    margin-top: 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #ccc;
   }
 
   button {
